@@ -13,13 +13,13 @@ library(lubridate)
 ee_Initialize()
 
 setwd("/Volumes/GoogleDrive/My Drive/R/meteorology-google-earth-engine-data")
-
+# setwd("/projects/HAQ_LAB/mrasel/R/meteorology-google-earth-engine-data")
 
 #getting facility locations
-ampd_monthly_emission <- (read.fst ("/Volumes/GoogleDrive/My Drive/R/ampd-raw-data-processing/data/ampd_monthly_all.fst"))
-# ampd_raw <- (read.fst ("/projects/HAQ_LAB/mrasel/R/ampd-raw-data-processing/data/ampd_monthly_all.fst"))
+ampd_monthly_emission <- read.fst ("/Volumes/GoogleDrive/My Drive/R/ampd-raw-data-processing/data/ampd_monthly_all.fst")
+# ampd_raw <- read.fst("/projects/HAQ_LAB/mrasel/R/ampd-raw-data-processing/data/ampd_monthly_all.fst")
 
-facility_locations <- na.omit(unique(ampd_monthly_emission %>%
+facility_locations <- na.omit(unique(ampd_monthly_emission %>% filter (STATE=="TX") %>%
                                        dplyr::select(ORISPL_CODE, Facility.Latitude, Facility.Longitude)))
 
 
@@ -73,17 +73,17 @@ ee_th <- ee_extract(x = gridmet.th, y = facility['ORISPL_CODE'], sf = FALSE)
 
 #wider data to longer data
 ee_pr_long <- ee_pr %>%
-  pivot_longer(-ORISPL_, names_to = "day", values_to = "pr") %>% mutate(day, day=gsub("PP_", "", day))
+  pivot_longer(-ORISPL_CODE, names_to = "day", values_to = "pr") %>% mutate(day, day=gsub("PP_", "", day))
 
 # ee_nc_pr %>% pivot_longer(cols = starts_with("PP"), names_to = "day", values_to = "pr") %>% mutate(day, day=gsub("PP_", "", day))
 ee_tmmx_long <- ee_tmmx %>%
-  pivot_longer(-ORISPL_, names_to = "day", values_to = "tmmx") %>% mutate(day, day=gsub("tmmx_", "", day))
+  pivot_longer(-ORISPL_CODE, names_to = "day", values_to = "tmmx") %>% mutate(day, day=gsub("tmmx_", "", day))
 ee_rmax_long <- ee_rmax %>%
-  pivot_longer(-ORISPL_, names_to = "day", values_to = "rmax") %>% mutate(day, day=gsub("rmax_", "", day))
+  pivot_longer(-ORISPL_CODE, names_to = "day", values_to = "rmax") %>% mutate(day, day=gsub("rmax_", "", day))
 ee_vs_long <- ee_vs %>%
-  pivot_longer(-ORISPL_, names_to = "day", values_to = "vs") %>% mutate(day, day=gsub("vs_", "", day))
+  pivot_longer(-ORISPL_CODE, names_to = "day", values_to = "vs") %>% mutate(day, day=gsub("vs_", "", day))
 ee_th_long <- ee_th %>%
-  pivot_longer(-ORISPL_, names_to = "day", values_to = "th") %>% mutate(day, day=gsub("th_", "", day))
+  pivot_longer(-ORISPL_CODE, names_to = "day", values_to = "th") %>% mutate(day, day=gsub("th_", "", day))
 
 
 met_2010 <- Reduce(function(x, y) merge(x, y, all=TRUE),
